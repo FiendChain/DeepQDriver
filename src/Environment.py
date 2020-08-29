@@ -35,7 +35,7 @@ class Environment:
         
         self.all_gate_segments = all_gate_segments
     
-    def step(self, action, dt=1):
+    def step(self, action, dt=1, reset_finished=True):
         self.car.set_action(action)
         self.car.tick(dt)
         self.sensor.update(self.car.pos, self.car.dir, self.wall_segments)
@@ -59,7 +59,7 @@ class Environment:
         # completed a full loop
         elif idx == 0 and self.last_gate == len(self.map.gates)-1:
             reward = 10000 / (self.last_gate_ticks**1.5)
-            done = True
+            done = reset_finished
             self.last_gate_ticks = 0 
         # ended up backwards
         elif idx != self.last_gate:

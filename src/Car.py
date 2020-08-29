@@ -15,7 +15,7 @@ class Car:
 
         self.mass = 100
 
-        self.F_engine_max = 5
+        self.F_engine_max = 10
         self.rev_rate = 0.05
         self.rev = 0
 
@@ -62,7 +62,7 @@ class Car:
         wheel_angle = self.wheel*self.wheel_angle_max
 
         # drifting
-        drift = False
+        drift = True
         if drift:
             v_control = 4
             v_traction = 1.5
@@ -72,7 +72,7 @@ class Car:
 
 
             wheel_control = (1-control_factor*0.5)*clip(sideslip_angle_cos, 0.2, 1)
-            wheel_traction = (1-traction_factor*0.9)
+            wheel_traction = (1-traction_factor*0.8)
 
             # compute forces and rotation
             R_inv = math.sin(wheel_angle * wheel_control)/self.dim.y # turn radius
