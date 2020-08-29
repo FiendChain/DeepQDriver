@@ -18,13 +18,26 @@ env = Environment(car, sensor, M)
 
 last_frame = time.perf_counter()
 
+total_reads = 0
+avg_tps = 0
+
 try:
     while True:
         env.tick(1)
         curr_frame = time.perf_counter()
         dt = curr_frame-last_frame
-        fps = 1/dt
-        print(f"fps: {int(fps):5d}\r", end='')
+        tps = 1/dt
+        print(f"tps: {int(tps):5d}\r", end='')
         last_frame = curr_frame
+
+        if total_reads == 0:
+            avg_tps = tps
+        else:
+            N = total_reads
+            avg_tps = (avg_tps*N + tps)/(N+1)
+        
+        total_reads += 1
 except KeyboardInterrupt:
     pass
+finally:
+    print(f"\navg tps: {int(avg_tps)}")

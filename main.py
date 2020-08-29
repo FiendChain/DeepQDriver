@@ -52,8 +52,11 @@ while running:
     
     screen.fill((255,255,255))
 
-    env.tick(0.5)
+    reward = env.tick(1)
     env_render.render(screen, env)
+
+    if reward != 0:
+        print(f"reward: {reward}")
 
 
     pygame.display.flip()

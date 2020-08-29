@@ -62,26 +62,38 @@ class Car:
         wheel_angle = self.wheel*self.wheel_angle_max
 
         # drifting
-        v_control = 4
-        v_traction = 1.5
+        drift = False
+        if drift:
+            v_control = 4
+            v_traction = 1.5
 
-        control_factor = clip(vel_len, 0, v_control)/v_control
-        traction_factor = clip(vel_len, 0, v_traction)/v_traction
+            control_factor = clip(vel_len, 0, v_control)/v_control
+            traction_factor = clip(vel_len, 0, v_traction)/v_traction
 
 
-        wheel_control = (1-control_factor*0.5)*clip(sideslip_angle_cos, 0.2, 1)
-        wheel_traction = (1-traction_factor*0.9)
+            wheel_control = (1-control_factor*0.5)*clip(sideslip_angle_cos, 0.2, 1)
+            wheel_traction = (1-traction_factor*0.9)
 
-        # compute forces and rotation
-        R_inv = math.sin(wheel_angle * wheel_control)/self.dim.y # turn radius
-        omega = vel_len*R_inv
+            # compute forces and rotation
+            R_inv = math.sin(wheel_angle * wheel_control)/self.dim.y # turn radius
+            omega = vel_len*R_inv
 
-        F_corner_mag = self.mass*(vel_len**2)*R_inv
-        F_corner_dir = point_rot(Vec2D(0,1), self.dir+wheel_angle+math.pi/2)
+            F_corner_mag = self.mass*(vel_len**2)*R_inv
+            F_corner_dir = point_rot(Vec2D(0,1), self.dir+wheel_angle+math.pi/2)
 
-        Fcorner = F_corner_mag * F_corner_dir * wheel_traction
+            Fcorner = F_corner_mag * F_corner_dir * wheel_traction
 
-        self.dir += omega*dt
+            self.dir += omega*dt
+        else:
+            wheel_angle = self.wheel*self.wheel_angle_max
+            R_inv = math.sin(wheel_angle)/self.dim.y # turn radius
+            omega = vel_len*R_inv
+
+            F_corner_mag = self.mass*(vel_len**2)*R_inv
+            F_corner_dir = point_rot(Vec2D(0,1), self.dir+wheel_angle+math.pi/2)
+
+            Fcorner = F_corner_mag * F_corner_dir
+            self.dir += omega*dt
 
         
 

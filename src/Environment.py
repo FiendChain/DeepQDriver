@@ -22,14 +22,52 @@ class Environment:
 
         wall_segments = [(Vec2D.from_tuple(p1), Vec2D.from_tuple(p2)) for p1, p2 in wall_segments]
         self.wall_segments = wall_segments
+
+        all_gate_segments = []
+        for gate in self.map.gates:
+            gate_segments = []
+            gate_segments.extend(list(zip(gate[:-1], gate[1:])))
+            gate_segments.append((gate[0], gate[-1]))
+
+            gate_segments = [(Vec2D.from_tuple(p1), Vec2D.from_tuple(p2)) for p1, p2 in gate_segments]
+
+            all_gate_segments.append(gate_segments)
+        
+        self.all_gate_segments = all_gate_segments
+
+
     
     def tick(self, dt):
         self.car.tick(dt)
         self.sensor.update(self.car.pos, self.car.dir, self.wall_segments)
 
+        self.last_gate_ticks += 1 
+
         if self.check_collision():
             self.reset()
+            return -1000
+        
+        idx = self.check_gate()
+        if idx is None:
+            return 0
 
+        # reached checkpoint
+        if idx != 0 and idx > self.last_gate:
+            reward = 10000 / (self.last_gate_ticks**1.5)
+            self.last_gate_ticks = 0 
+        elif idx == 0 and self.last_gate == len(self.map.gates)-1:
+            reward = 10000 / (self.last_gate_ticks**1.5)
+            self.last_gate_ticks = 0 
+        # ended up backwards
+        elif idx != self.last_gate:
+            reward = -1000
+            self.last_gate_ticks = 0 
+        else:
+            reward = 0
+
+        self.last_gate = idx
+
+        return reward
 
     def check_collision(self):
         car = self.car
@@ -46,6 +84,22 @@ class Environment:
         
         return False
 
+    def check_gate(self):
+        car = self.car
+        gates = self.map.gates
+
+        body_points = get_points(car.pos, car.dir, car.dim)
+        body_segments = list(zip(body_points[1:], body_points[:-1]))
+
+        for i, gate_segments in enumerate(self.all_gate_segments):
+            for gate_segment in gate_segments: 
+                for body_segment in body_segments:
+                    PoI = intersect_line_to_line(gate_segment, body_segment)
+                    if PoI:
+                        return i
+
+        return None
+
 
     def reset(self):
         car = self.car
@@ -58,5 +112,9 @@ class Environment:
         car.pos = pos
         car.dir = math.pi+dir_angle
         car.vel = Vec2D(0,0)
+
+
+        self.last_gate = 0
+        self.last_gate_ticks = 0
 
         self.sensor.reset()
