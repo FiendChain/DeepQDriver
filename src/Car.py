@@ -71,7 +71,7 @@ class Car:
             traction_factor = clip(vel_len, 0, v_traction)/v_traction
 
 
-            wheel_control = (1-control_factor*0.5)*clip(sideslip_angle_cos, 0.2, 1)
+            wheel_control = (1-control_factor*0.4)*clip(sideslip_angle_cos, 0.3, 1)
             wheel_traction = (1-traction_factor*0.5)
 
             # compute forces and rotation
@@ -103,11 +103,18 @@ class Car:
 
         self.vel += accel*dt
         self.pos += self.vel*dt
+
+    def set_direct(self, action):
+        accel, brake, wheel = action
+
+        self.accel = clip(accel, 0, 1)
+        self.brake = clip(brake, 0, 1)
+        self.wheel = clip(wheel, -1, 1)
     
     def set_action(self, action):
         inputs = [1,0,0]
         if action == 0:
-            inputs[1] = 0.8
+            inputs[1] = 0.6
         elif action == 1:
             inputs[2] = -1
         elif action == 2:

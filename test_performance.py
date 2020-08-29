@@ -21,7 +21,7 @@ last_frame = time.perf_counter()
 total_reads = 0
 avg_tps = 0
 
-action = [0,0,0]
+action = 0
 
 try:
     while True:

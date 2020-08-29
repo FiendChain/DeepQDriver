@@ -36,7 +36,7 @@ while running:
     screen.fill((255,255,255))
 
     action = player_controls.get_action()
-    observation, reward, done, info = env.step(action, 1)
+    observation, reward, done, info = env.step(action, direct=True, reset_finshed=False)
     env_render.render(screen, env)
 
     if reward != 0:

@@ -4,7 +4,7 @@ import pickle
 import time
 import numpy as np
 
-with open("map_2.pkl", "rb") as fp:
+with open("map.pkl", "rb") as fp:
     M = pickle.load(fp)
 
 car = Car()
