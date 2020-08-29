@@ -15,7 +15,7 @@ class Car:
 
         self.mass = 100
 
-        self.F_engine_max = 10
+        self.F_engine_max = 8
         self.rev_rate = 0.05
         self.rev = 0
 
@@ -65,14 +65,14 @@ class Car:
         drift = True
         if drift:
             v_control = 4
-            v_traction = 1.5
+            v_traction = 3.5
 
             control_factor = clip(vel_len, 0, v_control)/v_control
             traction_factor = clip(vel_len, 0, v_traction)/v_traction
 
 
             wheel_control = (1-control_factor*0.5)*clip(sideslip_angle_cos, 0.2, 1)
-            wheel_traction = (1-traction_factor*0.8)
+            wheel_traction = (1-traction_factor*0.5)
 
             # compute forces and rotation
             R_inv = math.sin(wheel_angle * wheel_control)/self.dim.y # turn radius
@@ -107,7 +107,7 @@ class Car:
     def set_action(self, action):
         inputs = [1,0,0]
         if action == 0:
-            inputs[1] = 0.6
+            inputs[1] = 0.8
         elif action == 1:
             inputs[2] = -1
         elif action == 2:

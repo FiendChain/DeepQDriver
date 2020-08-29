@@ -55,29 +55,34 @@ class Environment:
         if idx != 0 and idx > self.last_gate:
             reward = 10000 / (self.last_gate_ticks**1.5)
             done = False
+            info = {'gate': idx}
             self.last_gate_ticks = 0 
         # completed a full loop
         elif idx == 0 and self.last_gate == len(self.map.gates)-1:
             reward = 10000 / (self.last_gate_ticks**1.5)
             done = reset_finished
+            info = {'lap': True}
             self.last_gate_ticks = 0 
         # ended up backwards
         elif idx != self.last_gate:
             reward = -100
             done = True
+            info = {'backwards': True}
             self.last_gate_ticks = 0 
         # if too many ticks, then car just doing nothing
         elif idx == self.last_gate and self.last_gate_ticks > 1000:
             done = True
             reward = 0
+            info = {'too_slow': True}
         # just at the same gate
         else:
             done = False
             reward = 0
+            info = {}
 
         self.last_gate = idx
 
-        rv = self.get_observation(), reward, done, {}
+        rv = self.get_observation(), reward, done, info 
         if done:
             self.reset()
         return rv

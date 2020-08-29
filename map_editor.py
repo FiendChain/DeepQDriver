@@ -10,8 +10,13 @@ running = True
 
 # M = Map()
 
-with open("map.pkl", "rb") as fp:
-    M = pickle.load(fp)
+filename = "map_2.pkl"
+
+try:
+    with open(filename, "rb") as fp:
+        M = pickle.load(fp)
+except IOError:
+    M = Map()
 
 def t2v(t):
     return Vec2D(t[0], t[1])
@@ -137,7 +142,7 @@ while running:
 
     pygame.display.flip()
 
-with open("map.pkl", "wb") as fp:
+with open(filename, "wb") as fp:
     pickle.dump(M, fp)
 
 pygame.quit()

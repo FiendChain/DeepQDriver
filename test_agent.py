@@ -4,7 +4,7 @@ import pickle
 import time
 import numpy as np
 
-with open("map.pkl", "rb") as fp:
+with open("map_2.pkl", "rb") as fp:
     M = pickle.load(fp)
 
 car = Car()
@@ -24,9 +24,11 @@ model.add(Dense(16))
 model.add(Activation('relu'))
 model.add(Dense(nb_actions))
 model.add(Activation('linear'))
-model.load_weights("dqn_weights.h5f")
 print(model.summary())
 
+# model.load_weights("dqn_weights.h5f")
+# model.load_weights("dqn_drift_weights.h5f")
+model.load_weights("dqn_drift_2_weights.h5f")
 
 pygame.init()
 screen = pygame.display.set_mode([1500, 900])
