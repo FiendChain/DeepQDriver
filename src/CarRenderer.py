@@ -5,14 +5,14 @@ from .util import get_points, point_rot
 
 class CarRenderer:
     def __init__(self):
-        self.body_color = (0,0,255)
+        self.body_colour = (0,0,255)
         self.wheel_colour = (30,30,30)
     
     def render(self, surface, car):
         body = self.get_body_poly(car)
         wheels = self.get_wheel_polys(car)
 
-        pygame.draw.polygon(surface, self.body_color, self.cast_poly(body))
+        pygame.draw.polygon(surface, self.body_colour, self.cast_poly(body))
         for wheel in wheels:
             pygame.draw.polygon(surface, self.wheel_colour, self.cast_poly(wheel))
         

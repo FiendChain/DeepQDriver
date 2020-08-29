@@ -3,6 +3,7 @@ from src import Vec2D
 from src import Car
 from src import Map
 from src import Environment, EnvironmentRenderer
+from src import Sensor
 import pickle
 
 with open("map.pkl", "rb") as fp:
@@ -15,8 +16,9 @@ screen = pygame.display.set_mode([1500, 900])
 running = True
 
 car = Car()
+sensor = Sensor(200)
 
-env = Environment(car, M)
+env = Environment(car, sensor, M)
 env_render = EnvironmentRenderer()
 
 car_keydown = {
