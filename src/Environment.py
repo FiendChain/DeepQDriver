@@ -35,9 +35,8 @@ class Environment:
         
         self.all_gate_segments = all_gate_segments
 
-
-    
-    def tick(self, dt):
+    def tick(self, action, dt):
+        self.car.set_action(action)
         self.car.tick(dt)
         self.sensor.update(self.car.pos, self.car.dir, self.wall_segments)
 
@@ -68,6 +67,9 @@ class Environment:
         self.last_gate = idx
 
         return reward
+    
+    def get_observation(self):
+        return self.sensor.data
 
     def check_collision(self):
         car = self.car

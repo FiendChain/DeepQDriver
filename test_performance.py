@@ -21,9 +21,12 @@ last_frame = time.perf_counter()
 total_reads = 0
 avg_tps = 0
 
+action = [0,0,0]
+
 try:
     while True:
-        env.tick(1)
+        env.tick(action, 1)
+
         curr_frame = time.perf_counter()
         dt = curr_frame-last_frame
         tps = 1/dt

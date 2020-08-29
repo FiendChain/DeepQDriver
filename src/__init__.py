@@ -9,3 +9,5 @@ from .Environment import Environment
 from .EnvironmentRenderer import EnvironmentRenderer
 
 from .Sensor import Sensor
+
+from .PlayerControls import PlayerControls
