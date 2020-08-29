@@ -132,7 +132,11 @@ class Environment:
         pos = Vec2D.from_tuple(self.map.path[0])
         nxt = Vec2D.from_tuple(self.map.path[1])
         diff_vec = nxt-pos
-        dir_angle = math.atan(diff_vec.x/diff_vec.y)
+
+        if diff_vec.y < 0:
+            dir_angle = math.atan(diff_vec.x/-diff_vec.y)
+        else:
+            dir_angle = math.pi+math.atan(diff_vec.x/-diff_vec.y)
 
         car.pos = pos
         car.dir = math.pi+dir_angle

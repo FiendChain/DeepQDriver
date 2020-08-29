@@ -31,6 +31,14 @@ class Car:
 
         self.accel = 0
         self.brake = 0
+
+        self.drift = True
+
+        self.v_control = 4
+        self.v_traction = 3.5
+        self.C_drift_control = 0.4
+        self.C_drift_traction = 0.5
+        self.C_drift_sideslip = 0.3
     
     def tick(self, dt=1):
         dir_vec = point_rot(Vec2D(0,1), self.dir)
@@ -62,17 +70,16 @@ class Car:
         wheel_angle = self.wheel*self.wheel_angle_max
 
         # drifting
-        drift = True
-        if drift:
-            v_control = 4
-            v_traction = 3.5
+        if self.drift:
+            v_control = self.v_control
+            v_traction = self.v_traction
 
             control_factor = clip(vel_len, 0, v_control)/v_control
             traction_factor = clip(vel_len, 0, v_traction)/v_traction
 
 
-            wheel_control = (1-control_factor*0.4)*clip(sideslip_angle_cos, 0.3, 1)
-            wheel_traction = (1-traction_factor*0.5)
+            wheel_control = (1-control_factor*self.C_drift_control)*clip(sideslip_angle_cos, self.C_drift_sideslip, 1)
+            wheel_traction = (1-traction_factor*self.C_drift_traction)
 
             # compute forces and rotation
             R_inv = math.sin(wheel_angle * wheel_control)/self.dim.y # turn radius

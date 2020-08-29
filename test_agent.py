@@ -4,10 +4,16 @@ import pickle
 import time
 import numpy as np
 
-with open("map.pkl", "rb") as fp:
+with open("map_2.pkl", "rb") as fp:
     M = pickle.load(fp)
 
 car = Car()
+car.drift = True
+car.C_drift_control = 0.3
+car.C_drift_traction = 0.4
+car.C_drift_sideslip = 0.3
+car.F_engine_max = 10
+
 sensor = Sensor(200)
 env = Environment(car, sensor, M)
 

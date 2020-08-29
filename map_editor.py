@@ -10,7 +10,7 @@ running = True
 
 # M = Map()
 
-filename = "map_2.pkl"
+filename = "map_5.pkl"
 
 try:
     with open(filename, "rb") as fp:
@@ -55,7 +55,7 @@ def calculate_edges(M):
 
         norm = norm / norm.length()
 
-        width = 70
+        width = 50
         offset = norm*width
 
         left = curr + offset
