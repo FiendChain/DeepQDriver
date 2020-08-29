@@ -34,8 +34,8 @@ class Environment:
             all_gate_segments.append(gate_segments)
         
         self.all_gate_segments = all_gate_segments
-
-    def tick(self, action, dt):
+    
+    def step(self, action, dt=1):
         self.car.set_action(action)
         self.car.tick(dt)
         self.sensor.update(self.car.pos, self.car.dir, self.wall_segments)
@@ -44,29 +44,43 @@ class Environment:
 
         if self.check_collision():
             self.reset()
-            return -1000
+            return self.get_observation(), -100, True, {}
+
         
         idx = self.check_gate()
         if idx is None:
-            return 0
+            return self.get_observation(), 0, False, {}
 
-        # reached checkpoint
+        # passed checkpoint
         if idx != 0 and idx > self.last_gate:
             reward = 10000 / (self.last_gate_ticks**1.5)
+            done = False
             self.last_gate_ticks = 0 
+        # completed a full loop
         elif idx == 0 and self.last_gate == len(self.map.gates)-1:
             reward = 10000 / (self.last_gate_ticks**1.5)
+            done = True
             self.last_gate_ticks = 0 
         # ended up backwards
         elif idx != self.last_gate:
-            reward = -1000
+            reward = -100
+            done = True
             self.last_gate_ticks = 0 
+        # if too many ticks, then car just doing nothing
+        elif idx == self.last_gate and self.last_gate_ticks > 1000:
+            done = True
+            reward = 0
+        # just at the same gate
         else:
+            done = False
             reward = 0
 
         self.last_gate = idx
 
-        return reward
+        rv = self.get_observation(), reward, done, {}
+        if done:
+            self.reset()
+        return rv
     
     def get_observation(self):
         return self.sensor.data
@@ -120,3 +134,5 @@ class Environment:
         self.last_gate_ticks = 0
 
         self.sensor.reset()
+
+        return self.get_observation()

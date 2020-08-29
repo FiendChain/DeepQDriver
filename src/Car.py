@@ -105,9 +105,15 @@ class Car:
         self.pos += self.vel*dt
     
     def set_action(self, action):
-        assert len(action) == 3
+        inputs = [1,0,0]
+        if action == 0:
+            inputs[1] = 0.6
+        elif action == 1:
+            inputs[2] = -1
+        elif action == 2:
+            inputs[2] = 1
 
-        accel, brake, wheel = action
+        accel, brake, wheel = inputs
         self.accel = clip(accel, 0, 1)
         self.brake = clip(brake, 0, 1)
         self.wheel = clip(wheel, -1, 1)

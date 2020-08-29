@@ -25,7 +25,7 @@ action = [0,0,0]
 
 try:
     while True:
-        env.tick(action, 1)
+        env.step(action, 1)
 
         curr_frame = time.perf_counter()
         dt = curr_frame-last_frame
