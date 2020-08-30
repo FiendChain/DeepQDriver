@@ -25,3 +25,33 @@ def intersect_line_to_line(L1, L2):
         return u0 + t*v0
     
     return None
+
+def check_body_wall_collision(body_segments, wall_segments):
+    for wall_segment in wall_segments:
+        for segment in body_segments:
+            PoI = intersect_line_to_line(segment, wall_segment)
+            if PoI is not None:
+                return True
+    return False
+
+def project_ray(start, end, wall_segments):
+    segment = (start, end)
+    dist = (start-end).length()
+    for wall_segment in wall_segments:
+        PoI = intersect_line_to_line(segment, wall_segment)
+        if PoI is None:
+            continue
+
+        delta = (PoI-start).length()
+        dist = min(dist, delta)
+
+    return dist
+
+def check_body_gate_collision(body_segments, all_gate_segments):
+    for i, gate_segments in enumerate(all_gate_segments):
+        for gate_segment in gate_segments: 
+            for body_segment in body_segments:
+                PoI = intersect_line_to_line(gate_segment, body_segment)
+                if PoI:
+                    return i
+    return None

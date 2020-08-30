@@ -1,7 +1,7 @@
 from .Vec2D import Vec2D
 import math
 
-from .util import point_rot, clip
+from .util import point_rot, clip, get_points
 
 
 class Car:
@@ -131,6 +131,11 @@ class Car:
         self.accel = clip(accel, 0, 1)
         self.brake = clip(brake, 0, 1)
         self.wheel = clip(wheel, -1, 1)
+    
+    def get_segments(self):
+        body_points = get_points(self.pos, self.dir, self.dim)
+        body_segments = list(zip(body_points[1:], body_points[:-1]))
+        return body_segments
 
 
 

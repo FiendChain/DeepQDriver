@@ -1,39 +1,25 @@
 import math
 from .Vec2D import Vec2D
+from .BakedMap import BakedMap
+from .ThreadedBakedMap import ThreadedBakedMap
 
 from .util import get_points
 from .physics import intersect_line_to_line
 
 from .Sensor import Sensor
 
+
 class Environment:
     def __init__(self, car, sensor, M):
         self.car = car
         self.map = M
-        self.sensor = sensor
+        self.baked_map = BakedMap(M) 
+        # self.baked_map = ThreadedBakedMap(M) 
+        self.baked_map.summary()
 
+        self.sensor = sensor
         self.reset()
 
-        wall_segments = []
-        wall_segments.extend(list(zip(M.outer[:-1], M.outer[1:])))
-        wall_segments.append((M.outer[0], M.outer[-1]))
-        wall_segments.extend(list(zip(M.inner[:-1], M.inner[1:])))
-        wall_segments.append((M.inner[0], M.inner[-1]))
-
-        wall_segments = [(Vec2D.from_tuple(p1), Vec2D.from_tuple(p2)) for p1, p2 in wall_segments]
-        self.wall_segments = wall_segments
-
-        all_gate_segments = []
-        for gate in self.map.gates:
-            gate_segments = []
-            gate_segments.extend(list(zip(gate[:-1], gate[1:])))
-            gate_segments.append((gate[0], gate[-1]))
-
-            gate_segments = [(Vec2D.from_tuple(p1), Vec2D.from_tuple(p2)) for p1, p2 in gate_segments]
-
-            all_gate_segments.append(gate_segments)
-        
-        self.all_gate_segments = all_gate_segments
     
     def step(self, action, dt=1, reset_finished=True, direct=False):
         if not direct:
@@ -42,47 +28,46 @@ class Environment:
             self.car.set_direct(action)
 
         self.car.tick(dt)
-        self.sensor.update(self.car.pos, self.car.dir, self.wall_segments)
+        self.sensor.update(self.car, self.baked_map)
+
+        segments = self.car.get_segments()
 
         self.last_gate_ticks += 1 
 
-        if self.check_collision():
+        info = {'gate': self.last_gate}
+
+        if self.baked_map.check_wall_collision(segments):
             self.reset()
-            return self.get_observation(), -100, True, {}
+            return self.get_observation(), -100, True, info
 
         
-        idx = self.check_gate()
+        idx = self.baked_map.check_gate_collision(segments)
         if idx is None:
-            return self.get_observation(), 0, False, {}
+            return self.get_observation(), 0, False, info
 
         # passed checkpoint
         if idx != 0 and idx > self.last_gate:
             reward = 10000 / (self.last_gate_ticks**1.5)
             done = False
-            info = {'gate': idx}
             self.last_gate_ticks = 0 
         # completed a full loop
-        elif idx == 0 and self.last_gate == len(self.map.gates)-1:
+        elif idx == 0 and self.last_gate == self.baked_map.total_gates-1:
             reward = 10000 / (self.last_gate_ticks**1.5)
             done = reset_finished
-            info = {'lap': True}
             self.last_gate_ticks = 0 
         # ended up backwards
         elif idx != self.last_gate:
             reward = -100
             done = True
-            info = {'backwards': True}
             self.last_gate_ticks = 0 
         # if too many ticks, then car just doing nothing
         elif idx == self.last_gate and self.last_gate_ticks > 1000:
             done = True
             reward = 0
-            info = {'too_slow': True}
         # just at the same gate
         else:
             done = False
             reward = 0
-            info = {}
 
         self.last_gate = idx
 
@@ -94,52 +79,13 @@ class Environment:
     def get_observation(self):
         return self.sensor.data
 
-    def check_collision(self):
-        car = self.car
-        M = self.map
-
-        body_points = get_points(car.pos, car.dir, car.dim)
-        body_segments = list(zip(body_points[1:], body_points[:-1]))
-        
-        for body_segment in body_segments:
-            for wall_segment in self.wall_segments:
-                PoI = intersect_line_to_line(body_segment, wall_segment)
-                if PoI is not None:
-                    return True
-        
-        return False
-
-    def check_gate(self):
-        car = self.car
-        gates = self.map.gates
-
-        body_points = get_points(car.pos, car.dir, car.dim)
-        body_segments = list(zip(body_points[1:], body_points[:-1]))
-
-        for i, gate_segments in enumerate(self.all_gate_segments):
-            for gate_segment in gate_segments: 
-                for body_segment in body_segments:
-                    PoI = intersect_line_to_line(gate_segment, body_segment)
-                    if PoI:
-                        return i
-
-        return None
-
-
     def reset(self):
         car = self.car
 
-        pos = Vec2D.from_tuple(self.map.path[0])
-        nxt = Vec2D.from_tuple(self.map.path[1])
-        diff_vec = nxt-pos
+        pos0, dir0 = self.baked_map.get_spawn()
 
-        if diff_vec.y < 0:
-            dir_angle = math.atan(diff_vec.x/-diff_vec.y)
-        else:
-            dir_angle = math.pi+math.atan(diff_vec.x/-diff_vec.y)
-
-        car.pos = pos
-        car.dir = math.pi+dir_angle
+        car.pos = pos0
+        car.dir = dir0
         car.vel = Vec2D(0,0)
 
 
@@ -149,3 +95,6 @@ class Environment:
         self.sensor.reset()
 
         return self.get_observation()
+    
+    def on_exit(self):
+        self.baked_map.on_exit()

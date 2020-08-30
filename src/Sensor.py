@@ -17,19 +17,15 @@ class Sensor:
         for i in range(len(self.data)):
             self.data[i] = 1
     
-    def update(self, pos, dir_angle, segments):
+    def update(self, car, baked_map):
         self.reset()
 
-        ray_segments = [(pos, pos+point_rot(ray, dir_angle)) for ray in self.rays] 
-
-        for i, ray_seg in enumerate(ray_segments):
-            for wall_seg in segments:
-                PoI = intersect_line_to_line(ray_seg, wall_seg)
-                if PoI is None:
-                    continue
-
-                delta = (PoI-pos).length()
-                self.data[i] = min(delta/self.dist, self.data[i])
+        start = car.pos
+        for i, ray in enumerate(self.rays):
+            end = car.pos+point_rot(ray, car.dir)
+            dist = baked_map.project_ray(start, end)
+            if dist is not None:
+                self.data[i] = min(dist/self.dist, self.data[i])
         
 
 
