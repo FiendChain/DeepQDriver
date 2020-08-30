@@ -1,27 +1,8 @@
-from src import Car, Map, Environment, Sensor
+from src.Environment import *
 import pickle
 import time
 import os
 from argparse import ArgumentParser
-
-parser = ArgumentParser()
-parser.add_argument("map_file")
-parser.add_argument("ai_in")
-parser.add_argument("ai_out")
-parser.add_argument("--override", action="store_true")
-
-args = parser.parse_args()
-
-if os.path.isfile(args.ai_out) and not args.override:
-    print(f"Cannot override output {args.out_file}")
-    exit()
-
-with open(args.map_file, "rb") as fp:
-    M = pickle.load(fp)
-
-car = Car()
-sensor = Sensor(170)
-env = Environment(car, sensor, M)
 
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten
@@ -32,6 +13,25 @@ from rl.policy import EpsGreedyQPolicy
 from rl.memory import SequentialMemory
 
 def main():
+    parser = ArgumentParser()
+    parser.add_argument("map_file")
+    parser.add_argument("ai_in")
+    parser.add_argument("ai_out")
+    parser.add_argument("--override", action="store_true")
+
+    args = parser.parse_args()
+
+    if os.path.isfile(args.ai_out) and not args.override:
+        print(f"Cannot override output {args.out_file}")
+        exit()
+
+    with open(args.map_file, "rb") as fp:
+        M = pickle.load(fp)
+
+    car = Car()
+    sensor = Sensor(170)
+    env = Environment(car, sensor, M)
+
     nb_actions = 3
 
     model = Sequential()

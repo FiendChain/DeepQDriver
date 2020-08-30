@@ -1,9 +1,11 @@
 import pygame
-from src import Car, Map, Environment, Sensor, EnvironmentRenderer
+from src.Environment import *
 import pickle
 import time
 import numpy as np
 from argparse import ArgumentParser
+
+from ai_controls import WrapEnvironment, dqn_controls
 
 def main():
     parser = ArgumentParser()
@@ -24,7 +26,8 @@ def main():
     car.F_engine_max = 10
 
     sensor = Sensor(200)
-    env = Environment(car, sensor, M)
+
+    env = WrapEnvironment(dqn_controls, car, sensor, M)
 
     from keras.models import Sequential
     from keras.layers import Dense, Activation, Flatten

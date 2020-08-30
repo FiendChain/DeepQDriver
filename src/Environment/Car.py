@@ -111,23 +111,9 @@ class Car:
         self.vel += accel*dt
         self.pos += self.vel*dt
 
-    def set_direct(self, action):
+    def set_action(self, action):
         accel, brake, wheel = action
 
-        self.accel = clip(accel, 0, 1)
-        self.brake = clip(brake, 0, 1)
-        self.wheel = clip(wheel, -1, 1)
-    
-    def set_action(self, action):
-        inputs = [1,0,0]
-        if action == 0:
-            inputs[1] = 0.6
-        elif action == 1:
-            inputs[2] = -1
-        elif action == 2:
-            inputs[2] = 1
-
-        accel, brake, wheel = inputs
         self.accel = clip(accel, 0, 1)
         self.brake = clip(brake, 0, 1)
         self.wheel = clip(wheel, -1, 1)

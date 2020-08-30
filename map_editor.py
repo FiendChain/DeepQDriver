@@ -1,6 +1,6 @@
 import pygame
 import math
-from src import Vec2D, Map
+from src.Environment import Vec2D, Map
 import pickle
 import os
 from argparse import ArgumentParser

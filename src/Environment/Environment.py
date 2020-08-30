@@ -21,12 +21,8 @@ class Environment:
         self.reset()
 
     
-    def step(self, action, dt=1, reset_finished=True, direct=False):
-        if not direct:
-            self.car.set_action(action)
-        else:
-            self.car.set_direct(action)
-
+    def step(self, action, dt=1, reset_finished=True):
+        self.car.set_action(action)
         self.car.tick(dt)
         self.sensor.update(self.car, self.baked_map)
 
@@ -87,7 +83,6 @@ class Environment:
         car.pos = pos0
         car.dir = dir0
         car.vel = Vec2D(0,0)
-
 
         self.last_gate = 0
         self.last_gate_ticks = 0

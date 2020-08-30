@@ -1,10 +1,5 @@
 import pygame
-from src import Vec2D
-from src import Car
-from src import Map
-from src import Environment, EnvironmentRenderer
-from src import Sensor
-from src import PlayerControls
+from src.Environment import *
 import pickle
 
 from argparse import ArgumentParser
@@ -43,7 +38,7 @@ def main():
         screen.fill((255,255,255))
 
         action = player_controls.get_action()
-        observation, reward, done, info = env.step(action, direct=True, reset_finished=False)
+        observation, reward, done, info = env.step(action, reset_finished=False)
         env_render.render(screen, env)
 
         if reward != 0:

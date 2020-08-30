@@ -1,8 +1,4 @@
-from src import Vec2D
-from src import Car
-from src import Map
-from src import Environment
-from src import Sensor
+from src.Environment import *
 import pickle
 
 import time
