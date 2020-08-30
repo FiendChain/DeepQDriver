@@ -20,7 +20,7 @@ def main():
 
     car = Car()
     player_controls = PlayerControls()
-    sensor = Sensor(200)
+    sensor = Sensor(200, total=32)
 
     env = Environment(car, sensor, M)
     env_render = EnvironmentRenderer()

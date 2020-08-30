@@ -5,7 +5,7 @@ import time
 import numpy as np
 from argparse import ArgumentParser
 
-from src.Agents import EnvironmentWrapper, dqn_controls
+from src.Agents import EnvironmentWrapper, dqn_controls, create_dqn_model
 
 def main():
     parser = ArgumentParser()
@@ -23,9 +23,9 @@ def main():
     car.C_drift_control = 0.3
     car.C_drift_traction = 0.4
     car.C_drift_sideslip = 0.3
-    car.F_engine_max = 10
+    car.F_engine_max = 15
 
-    sensor = Sensor(200)
+    sensor = Sensor(200, total=16)
 
     env = Environment(car, sensor, M)
     env = EnvironmentWrapper(dqn_controls, env)
@@ -35,14 +35,7 @@ def main():
 
     nb_actions = 3
 
-    model = Sequential()
-    model.add(Flatten(input_shape=(1,8)))
-    model.add(Dense(16))
-    model.add(Activation('relu'))
-    model.add(Dense(16))
-    model.add(Activation('relu'))
-    model.add(Dense(nb_actions))
-    model.add(Activation('linear'))
+    model = create_dqn_model(env)
     print(model.summary())
 
     # model.load_weights("dqn_weights.h5f")
@@ -66,7 +59,7 @@ def main():
         screen.fill((255,255,255))
 
         observation = env.get_observation()
-        observation = np.array(observation).reshape((1,1,8))
+        observation = np.array(observation).reshape((1,1,env.nb_observations))
 
         action = model.predict(observation)
         action = np.argmax(action[0])

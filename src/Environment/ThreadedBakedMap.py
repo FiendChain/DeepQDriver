@@ -44,7 +44,7 @@ class ThreadedBakedMap(BakedMap):
     def __init__(self, M):
         super().__init__(M)
 
-        N = multiprocessing.cpu_count()//2
+        N = multiprocessing.cpu_count()//3
         wall_batches = split(self.wall_segments, N) 
 
         self.tasks = multiprocessing.JoinableQueue()

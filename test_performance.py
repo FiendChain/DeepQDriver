@@ -15,7 +15,7 @@ def main():
 
 
     car = Car()
-    sensor = Sensor(200)
+    sensor = Sensor(200, total=16)
 
     env = Environment(car, sensor, M)
 
@@ -24,7 +24,7 @@ def main():
     total_reads = 0
     avg_tps = 0
 
-    action = 0
+    action = [1,0,0]
 
     try:
         while True:

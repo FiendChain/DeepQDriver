@@ -20,4 +20,4 @@ class EnvironmentRenderer:
 
         self.car_rend.render(surface, env.car)
 
-        # self.sensor_rend.render(surface, env.car.pos, env.car.dir, env.sensor)
+        self.sensor_rend.render(surface, env.car.pos, env.car.dir, env.sensor)

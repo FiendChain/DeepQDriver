@@ -5,7 +5,7 @@ from .util import point_rot
 from .physics import intersect_line_to_line
 
 class Sensor:
-    def __init__(self, dist, total=8):
+    def __init__(self, dist, total=16):
         self.dist = dist
         self.total = total
         self.data = [1 for _ in range(total)]
