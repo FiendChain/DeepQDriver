@@ -2,18 +2,16 @@ from keras.models import Sequential, Model
 from keras.layers import Dense, Activation, Flatten, Input, Concatenate
 
 def create_ddpg_actor(env):
-    nb_actions = 3
-
     # Next, we build a very simple model.
     actor = Sequential()
-    actor.add(Flatten(input_shape=(1,8)))
+    actor.add(Flatten(input_shape=(1,env.nb_observations)))
     actor.add(Dense(16))
     actor.add(Activation('relu'))
     actor.add(Dense(16))
     actor.add(Activation('relu'))
     actor.add(Dense(16))
     actor.add(Activation('relu'))
-    actor.add(Dense(nb_actions))
+    actor.add(Dense(env.nb_actions))
     actor.add(Activation('sigmoid'))
 
     print(actor.summary())
@@ -21,10 +19,8 @@ def create_ddpg_actor(env):
     return actor
 
 def create_ddpg_critic(env):
-    nb_actions = 3
-
-    action_input = Input(shape=(nb_actions,), name='action_input')
-    observation_input = Input(shape=(1,8), name='observation_input')
+    action_input = Input(shape=(env.nb_actions,), name='action_input')
+    observation_input = Input(shape=(1,env.nb_observations), name='observation_input')
 
     flattened_observation = Flatten()(observation_input)
     x = Concatenate()([action_input, flattened_observation])

@@ -26,7 +26,7 @@ def train_agent(env, args):
     agent = DDPGAgent(nb_actions=nb_actions, actor=actor, critic=critic, critic_action_input=action_input,
                     memory=memory, nb_steps_warmup_critic=2000, nb_steps_warmup_actor=2000,
                     random_process=random_process, gamma=.99, target_model_update=1e-3)
-    agent.compile(Adam(lr=.001, clipnorm=1.), metrics=['mae'])
+    agent.compile(Adam(lr=0.5e-2, clipnorm=1.), metrics=['mae'])
 
     try:
         agent.load_weights(args.ai_in)
@@ -42,7 +42,7 @@ def train_agent(env, args):
     agent.save_weights(args.ai_out, overwrite=True)
 
     # Finally, evaluate our algorithm for 5 episodes.
-    agent.test(env, nb_episodes=5, visualize=False)
+    agent.test(env, nb_episodes=1, visualize=False)
 
 
 def main():

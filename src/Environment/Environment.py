@@ -74,6 +74,14 @@ class Environment:
     
     def get_observation(self):
         return self.sensor.data
+    
+    @property
+    def nb_observations(self):
+        return len(self.sensor.data)
+    
+    @property
+    def nb_actions(self):
+        return 3
 
     def reset(self):
         car = self.car

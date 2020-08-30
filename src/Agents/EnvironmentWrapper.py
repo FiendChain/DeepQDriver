@@ -27,3 +27,11 @@ class EnvironmentWrapper:
     @property
     def sensor(self):
         return self.env.sensor
+
+    @property
+    def nb_observations(self):
+        return self.env.nb_observations
+    
+    @property
+    def nb_actions(self):
+        return self.env.nb_actions
