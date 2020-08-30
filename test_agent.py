@@ -3,12 +3,20 @@ from src import Car, Map, Environment, Sensor, EnvironmentRenderer
 import pickle
 import time
 import numpy as np
+from argparse import ArgumentParser
 
-with open("map_2.pkl", "rb") as fp:
+parser = ArgumentParser()
+parser.add_argument("map_file")
+parser.add_argument("ai_file")
+parser.add_argument("--drift", action="store_true")
+
+args = parser.parse_args()
+
+with open(args.map_file, "rb") as fp:
     M = pickle.load(fp)
 
 car = Car()
-car.drift = True
+car.drift = args.drift
 car.C_drift_control = 0.3
 car.C_drift_traction = 0.4
 car.C_drift_sideslip = 0.3
@@ -34,7 +42,7 @@ print(model.summary())
 
 # model.load_weights("dqn_weights.h5f")
 # model.load_weights("dqn_drift_weights.h5f")
-model.load_weights("dqn_drift_2_weights.h5f")
+model.load_weights(args.ai_file)
 
 pygame.init()
 screen = pygame.display.set_mode([1500, 900])
@@ -58,7 +66,7 @@ while running:
     action = model.predict(observation)
     action = np.argmax(action[0])
 
-    _, reward, _, _ = env.step(action, reset_finished=False)
+    _, reward, _, _ = env.step(action, reset_finished=False, dt=1)
     env_render.render(screen, env)
 
     if reward != 0:

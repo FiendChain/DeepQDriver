@@ -7,7 +7,13 @@ from src import Sensor
 from src import PlayerControls
 import pickle
 
-with open("map_2.pkl", "rb") as fp:
+from argparse import ArgumentParser
+
+parser = ArgumentParser()
+parser.add_argument("map_file")
+args = parser.parse_args()
+
+with open(args.map_file, "rb") as fp:
     M = pickle.load(fp)
 
 pygame.init()

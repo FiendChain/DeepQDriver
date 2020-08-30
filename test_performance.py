@@ -6,8 +6,14 @@ from src import Sensor
 import pickle
 
 import time
+import argparse
 
-with open("map.pkl", "rb") as fp:
+parser = argparse.ArgumentParser()
+parser.add_argument("map_file")
+
+args = parser.parse_args()
+
+with open(args.map_file, "rb") as fp:
     M = pickle.load(fp)
 
 

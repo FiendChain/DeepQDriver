@@ -2,18 +2,26 @@ import pygame
 import math
 from src import Vec2D, Map
 import pickle
+import os
+from argparse import ArgumentParser
+
+parser = ArgumentParser()
+parser.add_argument("in_file")
+parser.add_argument("out_file")
+parser.add_argument("--override", action="store_true")
+args = parser.parse_args()
+
+if os.path.isfile(args.out_file) and not args.override:
+    print(f"Cannot override output {args.out_file}")
+    exit()
 
 pygame.init()
 
 screen = pygame.display.set_mode([1500, 900])
 running = True
 
-# M = Map()
-
-filename = "map_5.pkl"
-
 try:
-    with open(filename, "rb") as fp:
+    with open(args.in_file, "rb") as fp:
         M = pickle.load(fp)
 except IOError:
     M = Map()
@@ -142,7 +150,7 @@ while running:
 
     pygame.display.flip()
 
-with open(filename, "wb") as fp:
+with open(args.out_file, "wb") as fp:
     pickle.dump(M, fp)
 
 pygame.quit()
