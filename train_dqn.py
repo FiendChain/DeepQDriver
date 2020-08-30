@@ -19,7 +19,7 @@ def train_dqn(env, args):
 
     memory = SequentialMemory(limit=50000, window_length=1)
     policy = EpsGreedyQPolicy()
-    dqn = DQNAgent(model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=1000,
+    dqn = DQNAgent(model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=2000,
                 target_model_update=1e-2, policy=policy)
     dqn.compile(Adam(lr=0.5e-2), metrics=['mae'])
 
@@ -37,7 +37,7 @@ def train_dqn(env, args):
     dqn.save_weights(args.ai_out, overwrite=True)
 
     # Finally, evaluate our algorithm for 5 episodes.
-    dqn.test(env, nb_episodes=5, visualize=False)
+    dqn.test(env, nb_episodes=1, visualize=False)
 
 
 def main():

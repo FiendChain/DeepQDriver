@@ -1,4 +1,5 @@
 import math
+import random
 from .Vec2D import Vec2D
 from .BakedMap import BakedMap
 from .ThreadedBakedMap import ThreadedBakedMap
@@ -87,6 +88,10 @@ class Environment:
         car = self.car
 
         pos0, dir0 = self.baked_map.get_spawn()
+
+        pos0.x += (random.random()-0.5)*2*5
+        pos0.y += (random.random()-0.5)*2*5
+        dir0 += (random.random()-0.5)*2*(math.pi/10)
 
         car.pos = pos0
         car.dir = dir0
