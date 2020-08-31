@@ -74,18 +74,22 @@ class Environment:
         return rv
     
     def get_observation(self):
-        return self.sensor.data
+        data =  []
+        data.extend(self.sensor.data)
+        data.extend(self.car.get_observation())
+        return data
     
     @property
     def nb_observations(self):
-        return len(self.sensor.data)
+        return len(self.sensor.data)+self.car.nb_observations
     
     @property
     def nb_actions(self):
-        return 3
+        return self.car.nb_actions
 
     def reset(self):
-        car = self.car
+        self.car.reset()
+        self.sensor.reset()
 
         pos0, dir0 = self.baked_map.get_spawn()
 
@@ -93,14 +97,12 @@ class Environment:
         pos0.y += (random.random()-0.5)*2*5
         dir0 += (random.random()-0.5)*2*(math.pi/10)
 
-        car.pos = pos0
-        car.dir = dir0
-        car.vel = Vec2D(0,0)
+        self.car.pos = pos0
+        self.car.dir = dir0
 
         self.last_gate = 0
         self.last_gate_ticks = 0
 
-        self.sensor.reset()
 
         return self.get_observation()
     

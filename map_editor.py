@@ -36,6 +36,8 @@ def point_rot(p, angle):
     y = sin*p.x + cos*p.y
     return Vec2D(x, y)
 
+ROAD_WIDTH = 70
+
 def calculate_edges(M):
     inner = []
     outer = []
@@ -63,8 +65,7 @@ def calculate_edges(M):
 
         norm = norm / norm.length()
 
-        width = 50
-        offset = norm*width
+        offset = norm*ROAD_WIDTH
 
         left = curr + offset
         right = curr - offset
@@ -124,6 +125,13 @@ while running:
                 extend_path(ev.pos)
             elif ev.button == 3:
                 pop_path()
+            elif ev.button == 4:
+                ROAD_WIDTH = max(0, (ROAD_WIDTH-5))
+                calculate_edges(M)
+            elif ev.button == 5:
+                ROAD_WIDTH = min(1000, (ROAD_WIDTH+5))
+                calculate_edges(M)
+
         elif ev.type == pygame.KEYDOWN:
             if ev.key == pygame.K_r:
                 calculate_edges(M)

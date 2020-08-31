@@ -51,7 +51,7 @@ class Vec2D:
         return (t(self.x), t(self.y))
 
     def __str__(self):
-        return f"P({self.x},{self.y})"
+        return f"P({self.x:.2f},{self.y:.2f})"
     
     def __repr__(self):
         return str(self)

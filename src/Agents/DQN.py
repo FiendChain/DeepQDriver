@@ -18,7 +18,7 @@ def create_dqn_model(env):
 def dqn_controls(idx):
     action = [1,0,0]
     if idx == 0:
-        action[1] = 0.6
+        action[1] = 0.0
     elif idx == 1:
         action[2] = -1
     elif idx == 2:

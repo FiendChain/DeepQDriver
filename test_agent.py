@@ -23,17 +23,16 @@ def main():
     car.C_drift_control = 0.3
     car.C_drift_traction = 0.4
     car.C_drift_sideslip = 0.3
-    car.F_engine_max = 15
+    car.F_engine_max = 10
 
-    sensor = Sensor(200, total=16)
+    # sensor = Sensor(300, total=16)
+    sensor = NonLinearSensor(300, total=16)
 
     env = Environment(car, sensor, M)
     env = EnvironmentWrapper(dqn_controls, env)
 
     from keras.models import Sequential
     from keras.layers import Dense, Activation, Flatten
-
-    nb_actions = 3
 
     model = create_dqn_model(env)
     print(model.summary())
@@ -48,24 +47,38 @@ def main():
     env_render = EnvironmentRenderer()
 
     running = True
+
+    curr_tick = 0
+    action = None
+
     while running:
         for ev in pygame.event.get():
             if ev.type == pygame.QUIT:
                 running = False
             elif ev.type == pygame.KEYDOWN:
                 if ev.key == pygame.K_r:
+                    curr_tick = 0
                     env.reset()
+                elif ev.key == pygame.K_s:
+                    env_render.show_sensor = not env_render.show_sensor
+                elif ev.key == pygame.K_d:
+                    car.drift = not car.drift
+                    print(f"drift={car.drift}")
+
         
         screen.fill((255,255,255))
 
-        observation = env.get_observation()
-        observation = np.array(observation).reshape((1,1,env.nb_observations))
+        if curr_tick % 1 == 0 or action is None:
+            observation = env.get_observation()
+            observation = np.array(observation).reshape((1,1,env.nb_observations))
 
-        action = model.predict(observation)
-        action = np.argmax(action[0])
+            action = model.predict(observation)
+            action = np.argmax(action[0])
 
         _, reward, _, _ = env.step(action, reset_finished=False, dt=1)
+        curr_tick += 1
         env_render.render(screen, env)
+
 
         if reward != 0:
             print(f"reward: {reward}")

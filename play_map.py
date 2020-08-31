@@ -20,7 +20,8 @@ def main():
 
     car = Car()
     player_controls = PlayerControls()
-    sensor = Sensor(200, total=32)
+    # sensor = Sensor(200, total=16)
+    sensor = NonLinearSensor(300, total=16)
 
     env = Environment(car, sensor, M)
     env_render = EnvironmentRenderer()
@@ -34,6 +35,11 @@ def main():
             elif ev.type == pygame.KEYDOWN:
                 if ev.key == pygame.K_r:
                     env.reset()
+                elif ev.key == pygame.K_s:
+                    env_render.show_sensor = not env_render.show_sensor
+                elif ev.key == pygame.K_d:
+                    car.drift = not car.drift
+                    print(f"drift={car.drift}")
         
         screen.fill((255,255,255))
 

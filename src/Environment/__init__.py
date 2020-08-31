@@ -8,6 +8,6 @@ from .MapRenderer import MapRenderer
 from .Environment import Environment
 from .EnvironmentRenderer import EnvironmentRenderer
 
-from .Sensor import Sensor
+from .Sensor import Sensor, NonLinearSensor
 
 from .PlayerControls import PlayerControls

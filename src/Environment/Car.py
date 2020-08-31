@@ -8,16 +8,12 @@ class Car:
     def __init__(self):
         self.dim = Vec2D(20, 35)
 
-        self.dir = 0 # radians
-
-        self.pos = Vec2D(0,0)
-        self.vel = Vec2D(0,0)
+        self.reset()
 
         self.mass = 100
 
         self.F_engine_max = 8
         self.rev_rate = 0.05
-        self.rev = 0
 
         self.Cdrag = 0.3
         self.Crr = 0.7 # rolling resistance
@@ -25,12 +21,7 @@ class Car:
 
         self.Clateral = 2 # cornering stiffness
 
-
-        self.wheel = 0
         self.wheel_angle_max = math.pi/6
-
-        self.accel = 0
-        self.brake = 0
 
         self.drift = True
 
@@ -39,6 +30,18 @@ class Car:
         self.C_drift_control = 0.4
         self.C_drift_traction = 0.5
         self.C_drift_sideslip = 0.3
+
+        self.drift_factor = 0
+    
+    def reset(self):
+        self.dir = 0
+        self.pos = Vec2D(0, 0)
+        self.vel = Vec2D(0, 0)
+        self.rev = 0
+        self.wheel = 0
+        self.accel = 0
+        self.brake = 0
+        self.drift_factor = 0
     
     def tick(self, dt=1):
         dir_vec = point_rot(Vec2D(0,1), self.dir)
@@ -46,6 +49,9 @@ class Car:
         vel_norm = self.vel.norm()
 
         sideslip_angle_cos = dir_vec.dot(vel_norm)
+
+
+
 
         if self.accel > 0:
             self.rev = clip(self.rev+self.rev_rate*self.accel, 0, 1)
@@ -62,7 +68,8 @@ class Car:
 
         # latitude motion
         # we scale drifting drag with engine power
-        drift_vec = point_rot(dir_vec, math.pi/2)
+        drift_vec = point_rot(self.vel, math.pi/2)
+        drift_vec = drift_vec.norm()
         drift_angle_cos = drift_vec.dot(vel_norm)
         Frr_lat = -self.Crr*(1-self.rev)*(drift_vec*vel_len*drift_angle_cos)
 
@@ -80,6 +87,11 @@ class Car:
 
             wheel_control = (1-control_factor*self.C_drift_control)*clip(sideslip_angle_cos, self.C_drift_sideslip, 1)
             wheel_traction = (1-traction_factor*self.C_drift_traction)
+
+            drift_vector = point_rot(vel_norm, -self.dir)
+            self.drift_factor = drift_vector.x
+
+            # print(f"{self.drift_factor:.2f}\r", end='')
 
             # compute forces and rotation
             R_inv = math.sin(wheel_angle * wheel_control)/self.dim.y # turn radius
@@ -102,6 +114,8 @@ class Car:
             Fcorner = F_corner_mag * F_corner_dir
             self.dir += omega*dt
 
+            self.drift_factor = 0
+
         
 
         # sum forces
@@ -110,6 +124,17 @@ class Car:
 
         self.vel += accel*dt
         self.pos += self.vel*dt
+    
+    @property
+    def nb_observations(self):
+        return 1
+    
+    def get_observation(self):
+        return [self.drift_factor]
+    
+    @property
+    def nb_actions(self):
+        return 3
 
     def set_action(self, action):
         accel, brake, wheel = action
